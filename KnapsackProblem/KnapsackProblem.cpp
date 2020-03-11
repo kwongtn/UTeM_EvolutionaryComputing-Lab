@@ -9,47 +9,55 @@ using namespace std;
 const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
-const int TARGET = 104;
+const float TARGET = 104;
 
 int chromosome[POPSIZE][GENE];
-int fitness[POPSIZE];
+double fitness[POPSIZE];
 
 void initializePopulation() {
-    for(int i = 0; i < POPSIZE; i++){
-        for(int j = 0; j < GENE; j++){
-            chromosome[i][j] = rand() % 2;
-        }
-    }
+	for (int i = 0; i < POPSIZE; i++) {
+		for (int j = 0; j < GENE; j++) {
+			chromosome[i][j] = rand() % 2;
+		}
+	}
 }
 
 void printChromosome() {
-for(int i = 0; i < POPSIZE; i++){
-    cout << "Chromosome " << i << "\t";
-        for(int j = 0; j < GENE; j++){
-            cout << chromosome[i][j] << "\t";
-        }
-    cout << "\n";
-    }
+	for (int i = 0; i < POPSIZE; i++) {
+		cout << "Chromosome " << i << "\t";
+		for (int j = 0; j < GENE; j++) {
+			cout << chromosome[i][j] << "\t";
+		}
+		cout << "\n";
+	}
 }
 
 void evaluateChromosome() {
-    int accumulatedWeight = 0;
-    for(int i = 0; i < POPSIZE; i++) {
-        accumulatedWeight = 0;
-        for(int j = 0; j < GENE; j++) {
-            accumulatedWeight += chromosome[i][j];
-        }
+	int accumulatedWeight = 0;
+	for (int i = 0; i < POPSIZE; i++) {
+		accumulatedWeight = 0;
+		for (int j = 0; j < GENE; j++) {
+			if (chromosome[i][j]) {
+				accumulatedWeight += WEIGHT[j];
+			}
+		}
 
-        fitness[i] = accumulatedWeight;
-        cout << "Fitness value of chromosome " << i << " is " << accumulatedWeight << endl;
-    }
+		fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
+		cout << "Fitness value of chromosome " << i << " is " << fitness[i] << endl;
+	}
 
 }
 
 int main() {
-    initializePopulation();
-    printChromosome();
-    evaluateChromosome();
+	int cycles = 0;
+	while (true) {
+		initializePopulation();
+		printChromosome();
+		evaluateChromosome();
+		cout << "Total of " << cycles++ << " cycles ran. ";
+		// system("pause");
+		system("cls");
+	}
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
