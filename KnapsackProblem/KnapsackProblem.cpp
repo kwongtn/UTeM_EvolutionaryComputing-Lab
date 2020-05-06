@@ -13,6 +13,7 @@ const float TARGET = 104;
 
 int chromosome[POPSIZE][GENE];
 double fitness[POPSIZE];
+int parents[2][GENE];
 
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
@@ -33,6 +34,7 @@ void printChromosome() {
 }
 
 void evaluateChromosome() {
+	cout << endl;
 	int accumulatedWeight = 0;
 	for (int i = 0; i < POPSIZE; i++) {
 		accumulatedWeight = 0;
@@ -42,10 +44,39 @@ void evaluateChromosome() {
 			}
 		}
 
-		fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
+		// fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
+		fitness[i] = abs(accumulatedWeight - TARGET);
 		cout << "Fitness value of chromosome " << i << " is " << fitness[i] << endl;
 	}
 
+}
+
+void parentSelection() {
+	int player1, player2; // for players
+	int indexParents[2]; // Index of selected players
+
+	for (int i = 0; i < 2; i++) { // Selecting 2 parents
+		player1 = rand() % POPSIZE;
+		player2 = rand() % POPSIZE;
+
+		if (fitness[player1] <= fitness[player2]) {
+			indexParents[i] = player1;
+		} else {
+			indexParents[i] = player2;
+		}
+
+		cout << "\nPlayer " << player1 << " vs " << player2 << endl;
+		cout << "Player " << fitness[player1] << " vs " << fitness[player2] << endl;
+		cout << "Winner " << indexParents[i];
+	}
+
+		for (int p = 0; p < 2; p++) {
+			cout << "\nParents " << p + 1 << " : ";
+			for (int g = 0; g < GENE; g++) {
+				parents[p][g] = chromosome[indexParents[p]][g];
+				cout << parents[p][g] << " ";
+			}
+		}
 }
 
 int main() {
@@ -54,8 +85,9 @@ int main() {
 		initializePopulation();
 		printChromosome();
 		evaluateChromosome();
-		cout << "Total of " << cycles++ << " cycles ran. ";
-		// system("pause");
+		parentSelection();
+		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
+		system("pause");
 		system("cls");
 	}
 }
