@@ -10,7 +10,7 @@ const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
 const float TARGET = 104;
-const float MUT_PROBABILITY = 0.1;
+const float MUT_PROBABILITY = 0.9;
 const double CO_PROBABILITY = 0.9;
 
 int chromosome[POPSIZE][GENE];
@@ -18,33 +18,33 @@ double fitness[POPSIZE];
 int parents[2][GENE];
 int children[2][GENE];
 
+// Print a chromosome into space seperated genes.
 void printChromosome(int chromosome[GENE]) {
 	for (int i = 0; i < GENE; i++) {
-		cout << chromosome[i] << " " ;
+		cout << chromosome[i] << " ";
 	}
 	cout << "\n";
 }
 
+void printLine(int num = 10) {
+	for (int i = 0; i < 10; i++) {
+		cout << "=";
+	}
+
+	cout << endl;
+}
+
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
+		cout << "\tChromosome " << i << "\t";
 		for (int j = 0; j < GENE; j++) {
 			chromosome[i][j] = rand() % 2;
 		}
-	}
-}
-
-void printChromosome() {
-	for (int i = 0; i < POPSIZE; i++) {
-		cout << "Chromosome " << i << "\t";
-		for (int j = 0; j < GENE; j++) {
-			cout << chromosome[i][j] << "\t";
-		}
-		cout << "\n";
+		printChromosome(chromosome[i]);
 	}
 }
 
 void evaluateChromosome() {
-	cout << endl;
 	int accumulatedWeight = 0;
 	for (int i = 0; i < POPSIZE; i++) {
 		accumulatedWeight = 0;
@@ -56,7 +56,7 @@ void evaluateChromosome() {
 
 		// fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
 		fitness[i] = abs(accumulatedWeight - TARGET);
-		cout << "Fitness value of chromosome " << i << " is " << fitness[i] << endl;
+		cout << "\tFitness value of chromosome " << i << " is " << fitness[i] << endl;
 	}
 
 }
@@ -67,11 +67,11 @@ void crossOver() {
 			children[i][j] = parents[i][j];
 		}
 	}
-	
+
 	if (((rand() % 10) / 10) < CO_PROBABILITY) {
 		int co_point = rand() % GENE;
-		
-		cout << "\n\nCrossover at gene " << co_point + 1 << endl;
+
+		cout << "\tCrossover at gene " << co_point + 1 << endl;
 
 		for (int i = co_point; i < GENE; i++) {
 			children[0][i] = parents[1][i];
@@ -79,13 +79,11 @@ void crossOver() {
 		}
 	}
 
-	cout << "\n\nCrossover results:";
+	cout << "\tCrossover results:" << endl;
 
 	for (int i = 0; i < 2; i++) {
-		cout << "\nChildren " << i << ": ";
-		for (int j = 0; j < GENE; j++) {
-			cout << children[i][j] << " ";
-		}
+		cout << "\tC" << i << ": ";
+		printChromosome(children[i]);
 	}
 
 }
@@ -100,22 +98,25 @@ void parentSelection() {
 
 		if (fitness[player1] <= fitness[player2]) {
 			indexParents[i] = player1;
-		} else {
+		}
+		else {
 			indexParents[i] = player2;
 		}
 
-		cout << "\nPlayer " << player1 << " vs " << player2 << endl;
-		cout << "Player " << fitness[player1] << " vs " << fitness[player2] << endl;
-		cout << "Winner " << indexParents[i];
+		cout << "\tPlayer " << player1 << "(" << fitness[player1] << ") vs Player " << player2 << "(" << fitness[player2] << ")\t: Winner " << indexParents[i] << endl;
 	}
 
-		for (int p = 0; p < 2; p++) {
-			cout << "\nParents " << p + 1 << " : ";
-			for (int g = 0; g < GENE; g++) {
-				parents[p][g] = chromosome[indexParents[p]][g];
-				cout << parents[p][g] << " ";
-			}
+	cout << endl;
+	cout << "\tParents are:\n";
+
+
+	for (int p = 0; p < 2; p++) {
+		cout << "\t" << indexParents[p] << "\t: ";
+		for (int g = 0; g < GENE; g++) {
+			parents[p][g] = chromosome[indexParents[p]][g];
 		}
+		printChromosome(parents[p]);
+	}
 }
 
 void mutation() {
@@ -128,28 +129,41 @@ void mutation() {
 		if (prob < MUT_PROBABILITY) {
 			mut_point = rand() % GENE;
 
-			cout << "Mutation at gene = " << mut_point;
+			cout << "\tC" << c << ": Mutation at gene = " << mut_point << endl;
 
 			// Bitflip
 			children[c][mut_point] = !children[c][mut_point];
 		}
+		else {
+			cout << "\tC" << c << ": No mutation"<< endl;
+		}
 
-		cout << "Children " << c << ": " ;
-		printChromosome(children[c]);
+	}
 
+	for (int i = 0; i < 2; i++) {
+		cout << "\tC" << i << ": ";
+		printChromosome(children[i]);
 	}
 }
 
 int main() {
 	int cycles = 0;
 	while (true) {
+		cout << "Initialization" << endl;
 		initializePopulation();
-		printChromosome();
+
+		cout << "\nChromosome evaluation" << endl;
 		evaluateChromosome();
+
+		cout << "\nParent selection" << endl;
 		parentSelection();
 
-		mutation();
+		cout << "\nCrossover" << endl;
 		crossOver();
+
+		cout << "\nMutation" << endl;
+		mutation();
+
 		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
 		system("pause");
 		system("cls");
