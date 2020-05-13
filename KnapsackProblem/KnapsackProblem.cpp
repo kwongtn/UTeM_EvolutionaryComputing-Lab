@@ -155,6 +155,39 @@ void mutation() {
 	}
 }
 
+void newGenSelection() {
+	int worstID = -1;
+	int worstFitness = -1;
+	// Select the worst
+	for (int i = 0; i < POPSIZE; i++) {
+		if (fitness[i] > worstFitness) {
+			worstFitness = fitness[i];
+			worstID = i;
+		} 
+	}
+
+	cout << "\tC0: Replacing gene " << worstID << " as it had the worst fitness at " << worstFitness << endl;
+
+	// Replace the gene with that of children
+	for (int i = 0; i < GENE; i++) {
+		chromosome[worstID][i] = children[0][i];
+	}
+
+	// Random replacement
+	int randReplacement = rand() % GENE;
+
+	cout << "\tC1: Replacing " << randReplacement << " by random." << endl;
+
+	for (int i = 0; i < GENE; i++) {
+		chromosome[randReplacement][i] = children[1][i];
+	}
+
+	cout << "\n\tNew generation: " << endl;
+
+	printAllChromosomes("\t\t");
+
+}
+
 int main() {
 	int cycles = 0;
 	while (true) {
@@ -172,6 +205,9 @@ int main() {
 
 		cout << "\nMutation" << endl;
 		mutation();
+
+		cout << "\nNew gen crafting" << endl;
+		newGenSelection();
 
 		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
 		system("pause");
