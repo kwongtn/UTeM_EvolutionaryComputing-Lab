@@ -99,7 +99,9 @@ void parentSelection() {
 	int player1, player2; // for players
 	int indexParents[2]; // Index of selected players
 
-	for (int i = 0; i < 2; i++) { // Selecting 2 parents
+ReselectParent:
+	// Take 2 random player and select the best of them.
+	for (int i = 0; i < 2; i++) {
 		player1 = rand() % POPSIZE;
 		player2 = rand() % POPSIZE;
 
@@ -110,7 +112,13 @@ void parentSelection() {
 			indexParents[i] = player2;
 		}
 
-		cout << "\tPlayer " << player1 << "(" << fitness[player1] << ") vs Player " << player2 << "(" << fitness[player2] << ")\t: Winner " << indexParents[i] << endl;
+		cout << "\tChr " << player1 << "(" << fitness[player1] << ") vs Chr " << player2 << "(" << fitness[player2] << ")\t: Winner " << indexParents[i] << endl;
+	}
+
+	// If parents are the same, reselect parents
+	if (indexParents[0] == indexParents[1]) {
+		cout << "Parents are the same, reselecting parents." << endl;
+		goto ReselectParent;
 	}
 
 	cout << endl;
