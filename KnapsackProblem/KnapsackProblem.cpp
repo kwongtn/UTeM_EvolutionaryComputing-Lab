@@ -10,10 +10,20 @@ const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
 const float TARGET = 104;
+const float MUT_PROBABILITY = 0.1;
+const double CO_PROBABILITY = 0.9;
 
 int chromosome[POPSIZE][GENE];
 double fitness[POPSIZE];
 int parents[2][GENE];
+int children[2][GENE];
+
+void printChromosome(int chromosome[GENE]) {
+	for (int i = 0; i < GENE; i++) {
+		cout << chromosome[i] << " " ;
+	}
+	cout << "\n";
+}
 
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
@@ -51,6 +61,35 @@ void evaluateChromosome() {
 
 }
 
+void crossOver() {
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < GENE; j++) {
+			children[i][j] = parents[i][j];
+		}
+	}
+	
+	if (((rand() % 10) / 10) < CO_PROBABILITY) {
+		int co_point = rand() % GENE;
+		
+		cout << "\n\nCrossover at gene " << co_point + 1 << endl;
+
+		for (int i = co_point; i < GENE; i++) {
+			children[0][i] = parents[1][i];
+			children[1][i] = parents[0][i];
+		}
+	}
+
+	cout << "\n\nCrossover results:";
+
+	for (int i = 0; i < 2; i++) {
+		cout << "\nChildren " << i << ": ";
+		for (int j = 0; j < GENE; j++) {
+			cout << children[i][j] << " ";
+		}
+	}
+
+}
+
 void parentSelection() {
 	int player1, player2; // for players
 	int indexParents[2]; // Index of selected players
@@ -79,6 +118,28 @@ void parentSelection() {
 		}
 }
 
+void mutation() {
+	float prob;
+	int mut_point;
+
+	for (int c = 0; c < 2; c++) {
+		prob = (rand() % 11) / 10.0;
+
+		if (prob < MUT_PROBABILITY) {
+			mut_point = rand() % GENE;
+
+			cout << "Mutation at gene = " << mut_point;
+
+			// Bitflip
+			children[c][mut_point] = !children[c][mut_point];
+		}
+
+		cout << "Children " << c << ": " ;
+		printChromosome(children[c]);
+
+	}
+}
+
 int main() {
 	int cycles = 0;
 	while (true) {
@@ -86,6 +147,9 @@ int main() {
 		printChromosome();
 		evaluateChromosome();
 		parentSelection();
+
+		mutation();
+		crossOver();
 		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
 		system("pause");
 		system("cls");
