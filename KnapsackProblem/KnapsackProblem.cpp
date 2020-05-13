@@ -10,10 +10,12 @@ const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
 const float TARGET = 104;
+const double CO_PROBABILITY = 0.9;
 
 int chromosome[POPSIZE][GENE];
 double fitness[POPSIZE];
 int parents[2][GENE];
+int children[2][GENE];
 
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
@@ -47,6 +49,35 @@ void evaluateChromosome() {
 		// fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
 		fitness[i] = abs(accumulatedWeight - TARGET);
 		cout << "Fitness value of chromosome " << i << " is " << fitness[i] << endl;
+	}
+
+}
+
+void crossOver() {
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < GENE; j++) {
+			children[i][j] = parents[i][j];
+		}
+	}
+	
+	if (((rand() % 10) / 10) < CO_PROBABILITY) {
+		int co_point = rand() % GENE;
+		
+		cout << "\n\nCrossover at gene " << co_point + 1 << endl;
+
+		for (int i = co_point; i < GENE; i++) {
+			children[0][i] = parents[1][i];
+			children[1][i] = parents[0][i];
+		}
+	}
+
+	cout << "\n\nCrossover results:";
+
+	for (int i = 0; i < 2; i++) {
+		cout << "\nChildren " << i << ": ";
+		for (int j = 0; j < GENE; j++) {
+			cout << children[i][j] << " ";
+		}
 	}
 
 }
@@ -86,6 +117,7 @@ int main() {
 		printChromosome();
 		evaluateChromosome();
 		parentSelection();
+		crossOver();
 		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
 		system("pause");
 		system("cls");
