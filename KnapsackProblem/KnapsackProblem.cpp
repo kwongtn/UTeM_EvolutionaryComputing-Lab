@@ -16,7 +16,8 @@ const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
 const float TARGET = 104;
-const float MUT_PROBABILITY = 0.9;
+const float MUT_PROBABILITY = 0.5;
+
 const double CO_PROBABILITY = 0.9;
 
 int chromosome[POPSIZE][GENE];
@@ -37,7 +38,7 @@ void printChromosome(int chromosome[GENE], int fitnessIndex = 0, bool printFitne
 	cout << "\n";
 }
 
-void printLine(int num = 10) {
+void printLine(int num = 20) {
 	for (int i = 0; i < 10; i++) {
 		cout << "=";
 	}
