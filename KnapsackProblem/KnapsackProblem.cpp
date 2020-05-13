@@ -27,7 +27,7 @@ int currBestFitnessID = -1;
 int currBestFitness = -1;
 
 // Print a chromosome into space seperated genes.
-void printChromosome(int chromosome[GENE], int fitnessIndex=0 ,bool printFitness=false) {
+void printChromosome(int chromosome[GENE], int fitnessIndex = 0, bool printFitness = false) {
 	for (int i = 0; i < GENE; i++) {
 		cout << chromosome[i] << " ";
 	}
@@ -45,7 +45,7 @@ void printLine(int num = 10) {
 	cout << endl;
 }
 
-void printAllChromosomes(string prefix="\t", bool printFitness=false) {
+void printAllChromosomes(string prefix = "\t", bool printFitness = false) {
 	for (int i = 0; i < POPSIZE; i++) {
 		cout << prefix << "Chr " << i << "\t";
 		printChromosome(chromosome[i], i, printFitness);
@@ -152,13 +152,13 @@ void mutation() {
 		if (prob < MUT_PROBABILITY) {
 			mut_point = rand() % GENE;
 
-			cout << "\tC" << c << ": Mutation at gene = " << mut_point << endl;
+			cout << "\tC" << c << ": Mutation at gene " << mut_point << endl;
 
 			// Bitflip
 			children[c][mut_point] = !children[c][mut_point];
 		}
 		else {
-			cout << "\tC" << c << ": No mutation"<< endl;
+			cout << "\tC" << c << ": No mutation" << endl;
 		}
 
 	}
@@ -179,7 +179,7 @@ void newGenSelection() {
 		if (fitness[i] > worstFitness) {
 			worstFitness = fitness[i];
 			worstID = i;
-		} 
+		}
 	}
 
 	cout << "\tC0: Replacing gene " << worstID << " as it had the worst fitness at " << worstFitness << endl;
