@@ -6,6 +6,12 @@
 #include <ctime>
 using namespace std;
 
+// If all chromosomes have the same fitness value, halt the program.
+const bool HALT_ON_ALL_SAME = true;
+
+// Whether to replace the best chromosome on random
+const bool RANDOM_REPLACE_BEST = true;
+
 const int GENE = 8;
 const int WEIGHT[GENE] = { 45, 35, 25, 5, 25, 3, 2, 2 };
 const int POPSIZE = 10;
@@ -17,6 +23,8 @@ int chromosome[POPSIZE][GENE];
 double fitness[POPSIZE];
 int parents[2][GENE];
 int children[2][GENE];
+int currBestFitnessID = -1;
+int currBestFitness = -1;
 
 // Print a chromosome into space seperated genes.
 void printChromosome(int chromosome[GENE], int fitnessIndex=0 ,bool printFitness=false) {
@@ -184,7 +192,23 @@ void newGenSelection() {
 	// Random replacement
 	int randReplacement = rand() % GENE;
 
-	cout << "\tC1: Replacing " << randReplacement << " by random." << endl;
+	if (!RANDOM_REPLACE_BEST) {
+		if ((fitness[randReplacement] == currBestFitness) || (randReplacement == worstID)) {
+			for (int i = 0; i < POPSIZE; i++) {
+				if (!((fitness[i] == currBestFitness) || (i == worstID))) {
+					randReplacement = i;
+
+				}
+			}
+		}
+	} else {
+		if (randReplacement == worstID) {
+			randReplacement = (worstID + 1) % GENE;
+		}
+	}
+
+
+	cout << "\tC1: Replacing chr " << randReplacement << " by random." << endl;
 
 	for (int i = 0; i < GENE; i++) {
 		chromosome[randReplacement][i] = children[1][i];
@@ -196,13 +220,29 @@ void newGenSelection() {
 
 }
 
+void bestFitness() {
+	int bestFitness = TARGET;
+	int bestFitnessID = -1;
+	for (int i = 0; i < POPSIZE; i++) {
+		if (fitness[i] < bestFitness) {
+			bestFitness = fitness[i];
+			bestFitnessID = i;
+		}
+	}
+
+	currBestFitness = bestFitness;
+	currBestFitnessID = bestFitnessID;
+}
+
 int main() {
 	int cycles = 0;
+	bool breakLoop = false;
+
 	cout << "Chromosome intialization... ";
 	initializePopulation();
 	cout << "done.\n";
 
-	while (true) {
+	while (!breakLoop) {
 		cout << "Gen " << cycles << endl;
 		printLine();
 
@@ -222,6 +262,34 @@ int main() {
 		cout << "\nMutation" << endl;
 		mutation();
 
+		bestFitness();
+
+		printLine();
+		cout << "\nBest chromosome for this generation is chr " << currBestFitnessID << " with fitness of " << currBestFitness << endl;
+		printLine();
+
+		// If any chromosome hits the best possible fitness value, halt.
+		if (currBestFitness == 0) {
+			breakLoop = true;
+			break;
+		}
+
+		// If all chromosomes have the same fitness, halt based on constant.
+		int tempInt = fitness[0];
+		for (int i = 1; i < POPSIZE; i++) {
+			if (fitness[i] != tempInt) {
+				break;
+			}
+
+			if (HALT_ON_ALL_SAME && (i == POPSIZE - 1)) {
+				breakLoop = true;
+			}
+		}
+
+		if (breakLoop) {
+			break;
+		}
+
 		cout << "\nNew gen crafting" << endl;
 		newGenSelection();
 
@@ -229,6 +297,11 @@ int main() {
 		system("pause");
 		system("cls");
 	}
+
+	cout << "Program complete, best chromosome is chromosome " << currBestFitnessID << " with a fitness of " << currBestFitness << ". Its gene is: " << endl;
+	printChromosome(chromosome[currBestFitnessID]);
+	cout << "\n\n";
+	system("pause");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
