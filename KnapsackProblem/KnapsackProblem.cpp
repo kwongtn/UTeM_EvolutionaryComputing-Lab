@@ -34,6 +34,13 @@ void printLine(int num = 10) {
 	cout << endl;
 }
 
+void printAllChromosomes(string prefix="\t") {
+	for (int i = 0; i < POPSIZE; i++) {
+		cout << prefix << "Chromosome " << i << "\t";
+		printChromosome(chromosome[i]);
+	}
+}
+
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
 		cout << "\tChromosome " << i << "\t";
@@ -79,10 +86,10 @@ void crossOver() {
 		}
 	}
 
-	cout << "\tCrossover results:" << endl;
+	cout << "\n\tCrossover results:" << endl;
 
 	for (int i = 0; i < 2; i++) {
-		cout << "\tC" << i << ": ";
+		cout << "\t\tC" << i << ": ";
 		printChromosome(children[i]);
 	}
 
@@ -111,7 +118,7 @@ void parentSelection() {
 
 
 	for (int p = 0; p < 2; p++) {
-		cout << "\t" << indexParents[p] << "\t: ";
+		cout << "\t\t" << indexParents[p] << "\t: ";
 		for (int g = 0; g < GENE; g++) {
 			parents[p][g] = chromosome[indexParents[p]][g];
 		}
@@ -140,8 +147,10 @@ void mutation() {
 
 	}
 
+	cout << "\n\tMutation results:" << endl;
+
 	for (int i = 0; i < 2; i++) {
-		cout << "\tC" << i << ": ";
+		cout << "\t\tC" << i << ": ";
 		printChromosome(children[i]);
 	}
 }
