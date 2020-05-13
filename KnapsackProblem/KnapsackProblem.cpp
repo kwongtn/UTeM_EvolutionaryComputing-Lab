@@ -19,9 +19,12 @@ int parents[2][GENE];
 int children[2][GENE];
 
 // Print a chromosome into space seperated genes.
-void printChromosome(int chromosome[GENE]) {
+void printChromosome(int chromosome[GENE], int fitnessIndex=0 ,bool printFitness=false) {
 	for (int i = 0; i < GENE; i++) {
 		cout << chromosome[i] << " ";
+	}
+	if (printFitness) {
+		cout << "\t" << fitness[fitnessIndex];
 	}
 	cout << "\n";
 }
@@ -34,20 +37,18 @@ void printLine(int num = 10) {
 	cout << endl;
 }
 
-void printAllChromosomes(string prefix="\t") {
+void printAllChromosomes(string prefix="\t", bool printFitness=false) {
 	for (int i = 0; i < POPSIZE; i++) {
-		cout << prefix << "Chromosome " << i << "\t";
-		printChromosome(chromosome[i]);
+		cout << prefix << "Chr " << i << "\t";
+		printChromosome(chromosome[i], i, printFitness);
 	}
 }
 
 void initializePopulation() {
 	for (int i = 0; i < POPSIZE; i++) {
-		cout << "\tChromosome " << i << "\t";
 		for (int j = 0; j < GENE; j++) {
 			chromosome[i][j] = rand() % 2;
 		}
-		printChromosome(chromosome[i]);
 	}
 }
 
@@ -63,7 +64,6 @@ void evaluateChromosome() {
 
 		// fitness[i] = abs(accumulatedWeight - TARGET) / TARGET;
 		fitness[i] = abs(accumulatedWeight - TARGET);
-		cout << "\tFitness value of chromosome " << i << " is " << fitness[i] << endl;
 	}
 
 }
@@ -118,7 +118,7 @@ void parentSelection() {
 
 
 	for (int p = 0; p < 2; p++) {
-		cout << "\t\t" << indexParents[p] << "\t: ";
+		cout << "\t\tChr " << indexParents[p] << "\t: ";
 		for (int g = 0; g < GENE; g++) {
 			parents[p][g] = chromosome[indexParents[p]][g];
 		}
@@ -190,12 +190,20 @@ void newGenSelection() {
 
 int main() {
 	int cycles = 0;
-	while (true) {
-		cout << "Initialization" << endl;
-		initializePopulation();
+	cout << "Chromosome intialization... ";
+	initializePopulation();
+	cout << "done.\n";
 
-		cout << "\nChromosome evaluation" << endl;
+	while (true) {
+		cout << "Gen " << cycles << endl;
+		printLine();
+
+		cout << "\nChromosome evaluation... ";
 		evaluateChromosome();
+		cout << "done.\n";
+
+		cout << "\t Chr    Gene           \t\tFitness" << endl;
+		printAllChromosomes("\t", true);
 
 		cout << "\nParent selection" << endl;
 		parentSelection();
