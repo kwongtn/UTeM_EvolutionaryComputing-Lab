@@ -13,6 +13,7 @@ const float TARGET = 104;
 const float MUT_PROBABILITY = 0.9;
 const double CO_PROBABILITY = 0.9;
 
+double averageFitness;
 int chromosome[POPSIZE][GENE];
 int tempChromosome[POPSIZE][GENE];
 int newChromosomeCounter = 0;
@@ -184,6 +185,18 @@ void copyChromosome() {
 	}
 }
 
+void calculateAverageFitness() {
+	double totalFitness = 0;
+
+	for (int i = 0; i < POPSIZE; i++) {
+		totalFitness += fitness[i];
+	}
+
+	averageFitness = totalFitness / GENE;
+
+	cout << "\nAverage fitness is " << averageFitness << endl;
+}
+
 int main() {
 	int cycles = 0;
 	cout << "Initialization" << endl;
@@ -193,6 +206,8 @@ int main() {
 		newChromosomeCounter = 0;
 		cout << "\nChromosome evaluation" << endl;
 		evaluateChromosome();
+
+		calculateAverageFitness();
 
 		while (newChromosomeCounter * 2 < GENE) {
 			cout << "\nSURVIVAL SELECTION ROUND " << newChromosomeCounter << endl;
