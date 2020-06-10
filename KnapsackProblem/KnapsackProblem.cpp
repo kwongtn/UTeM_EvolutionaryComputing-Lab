@@ -14,6 +14,8 @@ const float MUT_PROBABILITY = 0.9;
 const double CO_PROBABILITY = 0.9;
 
 int chromosome[POPSIZE][GENE];
+int tempChromosome[POPSIZE][GENE];
+int newChromosomeCounter = 0;
 double fitness[POPSIZE];
 int parents[2][GENE];
 int children[2][GENE];
@@ -34,10 +36,18 @@ void printLine(int num = 10) {
 	cout << endl;
 }
 
-void printAllChromosomes(string prefix="\t") {
-	for (int i = 0; i < POPSIZE; i++) {
-		cout << prefix << "Chromosome " << i << "\t";
-		printChromosome(chromosome[i]);
+void printAllChromosomes(string prefix = "\t", string arrayName = "ori") {
+	if (arrayName == "ori") {
+		for (int i = 0; i < POPSIZE; i++) {
+			cout << prefix << "Chromosome " << i << "\t";
+			printChromosome(chromosome[i]);
+		}
+	}
+	else if (arrayName == "survival") {
+		for (int i = 0; i < (newChromosomeCounter * 2); i++) {
+			cout << prefix << "Survival Chromosome " << i << "\t";
+			printChromosome(tempChromosome[i]);
+		}
 	}
 }
 
@@ -142,7 +152,7 @@ void mutation() {
 			children[c][mut_point] = !children[c][mut_point];
 		}
 		else {
-			cout << "\tC" << c << ": No mutation"<< endl;
+			cout << "\tC" << c << ": No mutation" << endl;
 		}
 
 	}
@@ -155,23 +165,53 @@ void mutation() {
 	}
 }
 
+void survivalSelection() {
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < GENE; j++) {
+			tempChromosome[(newChromosomeCounter * 2) + i][j] = children[i][j];
+		}
+	}
+
+	newChromosomeCounter++;
+
+}
+
+void copyChromosome() {
+	for (int i = 0; i < POPSIZE; i++) {
+		for (int j = 0; j < GENE; j++) {
+			chromosome[i][j] = tempChromosome[i][j];
+		}
+	}
+}
+
 int main() {
 	int cycles = 0;
-	while (true) {
-		cout << "Initialization" << endl;
-		initializePopulation();
+	cout << "Initialization" << endl;
+	initializePopulation();
 
+	while (true) {
+		newChromosomeCounter = 0;
 		cout << "\nChromosome evaluation" << endl;
 		evaluateChromosome();
 
-		cout << "\nParent selection" << endl;
-		parentSelection();
+		while (newChromosomeCounter * 2 < GENE) {
+			cout << "\nSURVIVAL SELECTION ROUND " << newChromosomeCounter << endl;
+			cout << "\nParent selection" << endl;
+			parentSelection();
 
-		cout << "\nCrossover" << endl;
-		crossOver();
+			cout << "\nCrossover" << endl;
+			crossOver();
 
-		cout << "\nMutation" << endl;
-		mutation();
+			cout << "\nMutation" << endl;
+			mutation();
+
+			survivalSelection();
+		}
+
+		cout << "\nSurvival Selection" << endl;
+		printAllChromosomes("\t", "survival");
+
+		copyChromosome();
 
 		cout << "\n\nTotal of " << cycles++ << " cycles ran. \n";
 		system("pause");
