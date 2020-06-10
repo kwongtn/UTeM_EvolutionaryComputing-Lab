@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <ctime>
+#include <fstream>
+
 using namespace std;
 
 const int GENE = 8;
@@ -14,6 +16,15 @@ const float MUT_PROBABILITY = 0.9;
 const double CO_PROBABILITY = 0.9;
 
 double averageFitness;
+double bestFitness = 1000000;
+int bestChromosome[GENE];
+
+ofstream bestFitnessFile;
+ofstream avgFitnessFile;
+ofstream bestChromosomeFile;
+
+int cycles = 0;
+
 int chromosome[POPSIZE][GENE];
 int tempChromosome[POPSIZE][GENE];
 int newChromosomeCounter = 0;
@@ -195,19 +206,54 @@ void calculateAverageFitness() {
 	averageFitness = totalFitness / GENE;
 
 	cout << "\nAverage fitness is " << averageFitness << endl;
+
+	avgFitnessFile << "Gen " << cycles << "\t: " << averageFitness << endl;
+}
+
+void recordBestFitness() {
+
+	for (int i = 0; i < POPSIZE; i++) {
+		if (fitness[i] < bestFitness) {
+			bestFitness = fitness[i];
+			
+			for (int j = 0; j < GENE; j++) {
+				bestChromosome[j] = chromosome[i][j];
+			}
+		}
+
+	}
+
+	cout << "Best chromosome is ";
+	printChromosome(bestChromosome);
+	cout << "Best fitness is " << bestFitness << endl;
+
+	bestChromosomeFile << "Gen " << cycles << "\t: ";
+	for (int i = 0; i < GENE; i++) {
+		bestChromosomeFile << bestChromosome[i] << " ";
+	}
+	bestChromosomeFile << "\n";
+
+	bestFitnessFile << "Gen " << cycles << "\t: " << bestFitness << endl;
 }
 
 int main() {
-	int cycles = 0;
+	bestFitnessFile.open("bestFitness.txt");
+	avgFitnessFile.open("avgFitness.txt");
+	bestChromosomeFile.open("bestChromosome.txt");
+
 	cout << "Initialization" << endl;
 	initializePopulation();
 
 	while (true) {
 		newChromosomeCounter = 0;
+
 		cout << "\nChromosome evaluation" << endl;
 		evaluateChromosome();
 
+
 		calculateAverageFitness();
+
+		recordBestFitness();
 
 		while (newChromosomeCounter * 2 < GENE) {
 			cout << "\nSURVIVAL SELECTION ROUND " << newChromosomeCounter << endl;
